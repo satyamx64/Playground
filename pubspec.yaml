@@ -1,0 +1,28 @@
+name: playground
+description: Play knows no limit
+
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.0
+  firebase_auth: ^0.20.0
+  firebase_dynamic_links: ^0.7.0+1
+  provider: ^4.3.2+4
+  cloud_firestore: ^0.16.0
+  firebase_core: ^0.7.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  uses-material-design: true
