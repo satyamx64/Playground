@@ -15,8 +15,7 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
-  String error = '';
-  bool loading = false;
+  bool _loading = false;
 
   // text field state
   String email = '';
@@ -27,7 +26,7 @@ class _SignInState extends State<SignIn> {
     final Size size = MediaQuery.of(context).size;
     final screenHeight = size.height;
     final screenWidth = size.width;
-    return loading
+    return _loading
         ? Loading()
         : Scaffold(
             body: SingleChildScrollView(
@@ -40,7 +39,8 @@ class _SignInState extends State<SignIn> {
                     children: <Widget>[
                       Text(
                         'SIGN IN',
-                        style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: screenHeight / 9),
                       TextFormField(
@@ -70,36 +70,109 @@ class _SignInState extends State<SignIn> {
                         child: Text('Forgot your Password?'),
                       ),
                       SizedBox(height: 20.0),
-                      GestureDetector(
-                        onTap: () async {
-                          if (_formKey.currentState.validate()) {
-                            setState(() => loading = true);
-                            dynamic result = await _auth
-                                .signInWithEmailAndPassword(email, password);
-                            if (result == null) {
-                              setState(() {
-                                loading = false;
-                                error =
-                                    'Could not sign in with those credentials';
-                              });
+                      ElevatedButton(
+                          onPressed: () async {
+                            if (_formKey.currentState.validate()) {
+                              setState(() => _loading = true);
+                              dynamic result = await _auth
+                                  .signInWithEmailAndPassword(email, password);
+                              if (result == null) {
+                                setState(() {
+                                  _loading = false;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    customSnackBar(
+                                      'Error signing In. Try again.',
+                                    ),
+                                  );
+                                });
+                              }
                             }
-                          }
-                        },
-                        child: Container(
-                          height: 48,
-                          width: double.maxFinite,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(24)),
-                          child: Text(
-                            'Submit',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20.0),
-                      SizedBox(height: 20.0),
+                          },
+                          child: Text('Sign In')),
+                      // OutlinedButton(
+                      //   style: ButtonStyle(
+                      //     backgroundColor:
+                      //         MaterialStateProperty.all(Colors.blue),
+                      //     shape: MaterialStateProperty.all(
+                      //       RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(40),
+                      //       ),
+                      //     ),
+                      //   ),
+                      //   onPressed: () async {
+                      //     if (_formKey.currentState.validate()) {
+                      //       setState(() => _loading = true);
+                      //       dynamic result = await _auth
+                      //           .signInWithEmailAndPassword(email, password);
+                      //       if (result == null) {
+                      //         setState(() {
+                      //           _loading = false;
+                      //           ScaffoldMessenger.of(context).showSnackBar(
+                      //             customSnackBar(
+                      //               'Error signing In. Try again.',
+                      //             ),
+                      //           );
+                      //         });
+                      //       }
+                      //     }
+                      //   },
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      //     child: Row(
+                      //       mainAxisSize: MainAxisSize.min,
+                      //       mainAxisAlignment: MainAxisAlignment.center,
+                      //       children: <Widget>[
+                      //         Image(
+                      //           image: AssetImage("assets/google_logo.png"),
+                      //           height: 35.0,
+                      //         ),
+                      //         Padding(
+                      //           padding: const EdgeInsets.only(left: 10),
+                      //           child: Text(
+                      //             'Sign in with Google',
+                      //             style: TextStyle(
+                      //               fontSize: 20,
+                      //               color: Colors.black54,
+                      //               fontWeight: FontWeight.w600,
+                      //             ),
+                      //           ),
+                      //         )
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                      // GestureDetector(
+                      //   onTap: () async {
+                      //     if (_formKey.currentState.validate()) {
+                      //       setState(() => _loading = true);
+                      //       dynamic result = await _auth
+                      //           .signInWithEmailAndPassword(email, password);
+                      //       if (result == null) {
+                      //         setState(() {
+                      //           _loading = false;
+                      //           ScaffoldMessenger.of(context).showSnackBar(
+                      //             customSnackBar(
+                      //               'Error signing out. Try again.',
+                      //             ),
+                      //           );
+                      //         });
+                      //       }
+                      //     }
+                      //   },
+                      //   child: Container(
+                      //     height: 48,
+                      //     width: double.maxFinite,
+                      //     alignment: Alignment.center,
+                      //     decoration: BoxDecoration(
+                      //         color: Colors.blue,
+                      //         borderRadius: BorderRadius.circular(24)),
+                      //     child: Text(
+                      //       'Submit',
+                      //       style: TextStyle(color: Colors.white),
+                      //     ),
+                      //   ),
+                      // ),
+                      SizedBox(height: 40.0),
                       Text.rich(
                         TextSpan(children: <TextSpan>[
                           TextSpan(text: 'Don\'t have an account? '),
@@ -115,10 +188,83 @@ class _SignInState extends State<SignIn> {
                                 }),
                         ]),
                       ),
-                      Text(
-                        error,
-                        style: TextStyle(color: Colors.red, fontSize: 14.0),
+                      SizedBox(
+                        height: 20,
                       ),
+                      OutlinedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                          ),
+                        ),
+                        onPressed: () async {
+                          setState(() => _loading = true);
+                          dynamic result = await _auth
+                              .signInWithGoogle();
+                          if (result == null) {
+                            setState(() {
+                              _loading = false;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                customSnackBar(
+                                  'Error signing In. Try again.',
+                                ),
+                              );
+                            });
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Image(
+                                image: AssetImage("assets/google_logo.png"),
+                                height: 35.0,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  'Sign in with Google',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      // ElevatedButton(
+                      //     onPressed: () async {
+                      //       dynamic result = await _auth.signInWithGoogle();
+                      //       if (result == null) {
+                      //         setState(() {
+                      //           _loading = false;
+                      //           error =
+                      //               'Could not sign in with those credentials';
+                      //         });
+                      //       }
+                      //     },
+                      //     child: Text('Google Sign In')),
+                      // ElevatedButton(
+                      //     onPressed: () async {
+                      //       dynamic result = await _auth.signOut();
+                      //       if (result == null) {
+                      //         setState(() {
+                      //           _loading = false;
+                      //           error =
+                      //               'Could not sign in with those credentials';
+                      //         });
+                      //       }
+                      //     },
+                      //     child: Text('Google Sign Out')),
                     ],
                   ),
                 ),

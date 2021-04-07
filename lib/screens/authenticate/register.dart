@@ -15,8 +15,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
-  String error = '';
-  bool loading = false;
+  bool _loading = false;
 
   // text field state
   String email = '';
@@ -27,7 +26,7 @@ class _RegisterState extends State<Register> {
     final Size size = MediaQuery.of(context).size;
     final screenHeight = size.height;
     final screenWidth = size.width;
-    return loading
+    return _loading
         ? Loading()
         : Scaffold(
             body: SingleChildScrollView(
@@ -66,35 +65,27 @@ class _RegisterState extends State<Register> {
                         },
                       ),
                       SizedBox(height: 54.0),
-                      GestureDetector(
-                        onTap: () async {
-                          if (_formKey.currentState.validate()) {
-                            setState(() => loading = true);
-                            dynamic result = await _auth
-                                .registerWithEmailAndPassword(email, password);
-                            if (result == null) {
-                              setState(() {
-                                loading = false;
-                                error = 'Please supply a valid email';
-                              });
+                      ElevatedButton(
+                          onPressed: () async {
+                            if (_formKey.currentState.validate()) {
+                              setState(() => _loading = true);
+                              dynamic result =
+                                  await _auth.registerWithEmailAndPassword(
+                                      email, password);
+                              if (result == null) {
+                                setState(() {
+                                  _loading = false;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    customSnackBar(
+                                      'Error signing Up. Try again.',
+                                    ),
+                                  );
+                                });
+                              }
                             }
-                          }
-                        },
-                        child: Container(
-                          height: 48,
-                          width: double.maxFinite,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(24)),
-                          child: Text(
-                            'Register',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20.0),
-                      SizedBox(height: 20.0),
+                          },
+                          child: Text('Register')),
+                      SizedBox(height: 40.0),
                       Text.rich(
                         TextSpan(children: <TextSpan>[
                           TextSpan(text: 'Do have an account? '),
@@ -110,10 +101,7 @@ class _RegisterState extends State<Register> {
                                 }),
                         ]),
                       ),
-                      Text(
-                        error,
-                        style: TextStyle(color: Colors.red, fontSize: 14.0),
-                      ),
+                      
                     ],
                   ),
                 ),
